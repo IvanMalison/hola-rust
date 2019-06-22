@@ -25,19 +25,46 @@ where A: Eq + Hash + Clone,
         match self.cache.get(key) {
             Some(v) =>  v.clone(),
             None => {
-                self.cache.insert(arg.clone(), (self.calculation)(arg.clone()));
-                self.cache.get(key).unwrap().clone()
+                self.add(arg.clone());
+                self.run(arg)
             },
         }
+    }
+
+    fn add(&mut self, arg: A) {
+        self.cache.insert(arg.clone(), (self.calculation)(arg.clone()));
+    }
+
+    fn run_ref(&mut self, arg: A) -> &B {
+        let key = &arg;
+        if ! self.cache.contains_key(key) {
+            self.add(arg.clone());
+        }
+        self.cache.get(key).unwrap()
     }
 }
 
 fn main() {
-    let mut c = Cacher::new(|a| a);
+    let mut c = Cacher::new(|a| {
+        println!("Running for {}", a);
+        a
+    });
 
     let v1 = c.run(1);
     let v2 = c.run(2);
 
     println!("{}", v1);
     println!("{}", v2);
+
+    let v3 = c.run(1);
+    let v4 = c.run(2);
+    let v5 = c.run(3);
+
+    println!("{}", v3);
+    println!("{}", v4);
+    println!("{}", v5);
+    println!("{}", v5);
+    println!("{}", c.run_ref(4));
+    println!("{}", c.run_ref(4));
+    println!("{}", c.run(4));
 }
