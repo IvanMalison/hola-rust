@@ -20,10 +20,13 @@ where A: Eq + Hash + Clone,
         }
     }
 
+    fn add(&mut self, arg: A) {
+        self.cache.insert(arg.clone(), (self.calculation)(arg.clone()));
+    }
+
     fn run(&mut self, arg: A) -> B {
-        let key = &arg;
-        match self.cache.get(key) {
-            Some(v) =>  v.clone(),
+        match self.cache.get(&arg) {
+            Some(v) => v.clone(),
             None => {
                 self.add(arg.clone());
                 self.run(arg)
@@ -31,8 +34,14 @@ where A: Eq + Hash + Clone,
         }
     }
 
-    fn add(&mut self, arg: A) {
-        self.cache.insert(arg.clone(), (self.calculation)(arg.clone()));
+    fn run_ref_alt(&mut self, arg: A) -> &B {
+        match self.cache.get(&arg) {
+            Some(_) => self.cache.get(&arg).unwrap(),
+            None => {
+                self.add(arg.clone());
+                self.run_ref_alt(arg)
+            },
+        }
     }
 
     fn run_ref(&mut self, arg: A) -> &B {
@@ -64,6 +73,6 @@ fn main() {
     println!("{}", v5);
     println!("{}", v5);
     println!("{}", c.run_ref(4));
-    println!("{}", c.run_ref(4));
+    println!("{}", c.run_ref_alt(4));
     println!("{}", c.run(4));
 }
