@@ -36,11 +36,10 @@ where A: Eq + Hash + Clone,
     }
 
     fn run_ref(&mut self, arg: A) -> &B {
-        let key = &arg;
-        if ! self.cache.contains_key(key) {
+        if ! self.cache.contains_key(&arg) {
             self.add(arg.clone());
         }
-        self.cache.get(key).unwrap()
+        self.cache.get(&arg).unwrap()
     }
 }
 
