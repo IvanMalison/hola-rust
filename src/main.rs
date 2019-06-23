@@ -36,7 +36,14 @@ where A: Eq + Hash + Clone,
 
     fn run_ref_alt(&mut self, arg: A) -> &B {
         match self.cache.get(&arg) {
-            Some(_) => self.cache.get(&arg).unwrap(),
+            // I think one can't just use _v below because it changes the
+            // lifetime of the immutable self borrow that results from to extend
+            // long enough to interfere with the mutable borrow of self that is
+            // required by the call to add. It's not entirely clear to me why
+            // the compiler isn't smart enough to see that we don't actually
+            // need the extended lifetime for the cases where we actually do
+            // mutation, but I suspect that this is the issue
+            Some(_v) => self.cache.get(&arg).unwrap(), // _v,
             None => {
                 self.add(arg.clone());
                 self.run_ref_alt(arg)
