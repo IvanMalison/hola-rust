@@ -51,13 +51,14 @@ fn main() {
     let v3 = c.run(1);
     let v4 = c.run(2);
     let v5 = c.run(3);
-    // c.cache.clear();
+    c.cache.clear();
 
     println!("{}", v3);
+    println!("{}", c.run(3));
     println!("{}", v4);
     println!("{}", v5);
     println!("{}", v5);
-    // println!("{}", v1);
+    println!("{}", v1);
     println!("{}", c.run(4));
     println!("{}", c.run(4));
     println!("{}", c.run(4));
