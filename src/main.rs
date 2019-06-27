@@ -27,7 +27,7 @@ where A: Eq + Hash + Clone,
 
     fn run(&mut self, arg: A) -> Rc<B> {
         match self.cache.get(&arg) {
-            Some(v) => v.clone(),
+            Some(v) => Rc::clone(v),
             None => {
                 self.add(arg.clone());
                 self.run(arg)
